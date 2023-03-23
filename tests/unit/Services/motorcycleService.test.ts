@@ -11,7 +11,7 @@ describe('testando a camada MotorcycleService', function () {
   });
 
   const inputMotor: IMotorcycle = {
-    model: 'Honda Cb 600f Hornet',
+    model: 'Honda Cb 600f',
     year: 2005,
     color: 'Yellow',
     status: true,
@@ -22,7 +22,7 @@ describe('testando a camada MotorcycleService', function () {
 
   const outputMotor: IMotorcycle = {
     id: '641ca6c0aada7daafc578872',
-    model: 'Honda Cb 600f Hornet',
+    model: 'Honda Cb 600f',
     year: 2005,
     color: 'Yellow',
     status: true,
