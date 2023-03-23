@@ -13,6 +13,10 @@ class CarService {
   private creteCarDomain(carValues: ICar): Car {
     return new Car(carValues);
   }
+
+  private isValidId(id: string): boolean {
+    return isValidObjectId(id);
+  }
   
   public async createCar(values: ICar) {
     const newCar = await this.carODM.createCar(values);
@@ -26,13 +30,20 @@ class CarService {
   }
 
   public async findById(id: string) {
-    const isValid = isValidObjectId(id);
-    if (!isValid) throw new Error('Invalid mongo id');
+    if (!this.isValidId(id)) throw new Error('Invalid mongo id');
 
     const car = await this.carODM.findById(id);
     if (!car) throw new Error('Car not found');
 
     return this.creteCarDomain(car);
+  }
+
+  public async updateOne(id: string, newData: ICar) {
+    if (!this.isValidId(id)) throw new Error('Invalid mongo id');
+    
+    const updatedCar = await this.carODM.updateOne(id, newData);
+    if (!updatedCar) throw new Error('Car not found');
+    return this.creteCarDomain(updatedCar);
   }
 }
 
