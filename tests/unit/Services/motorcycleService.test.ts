@@ -3,6 +3,7 @@ import { Model } from 'mongoose';
 import Sinon from 'sinon';
 import IMotorcycle from '../../../src/Interfaces/IMotorcycle';
 import MotorcycleODM from '../../../src/Models/MotorcycleODM';
+import MessagesTypes from '../../../src/Services/MessagesTypes';
 import MotorcycleService from '../../../src/Services/MotorcycleService';
 
 describe('testando a camada MotorcycleService', function () {
@@ -52,6 +53,8 @@ describe('testando a camada MotorcycleService', function () {
     engineCapacity: 600,
   };
 
+  const deleteReturn = { acknowledged: true, deletedCount: 1 };
+  const deleteFailReturn = { acknowledged: true, deletedCount: 0 };
   const validId = '641ca6c0aada7daafc578872';
   const invalidId = 'INVALID';
 
@@ -167,6 +170,51 @@ describe('testando a camada MotorcycleService', function () {
         await motorcycleService.updateOne(validId, updatedInput);
       } catch (error) {
         expect((error as Error).message).to.be.equal('Motorcycle not found');
+      }
+    });
+  });
+
+  describe('Método DeleteOne', function () {
+    afterEach(function () {
+      Sinon.restore();
+    });
+    
+    it('Deve ser possível deletar uma moto pelo ID', async function () {
+      // Arrange
+      Sinon.stub(Model, 'deleteOne').resolves(deleteReturn);
+      
+      // Action
+      const motorcycleODM = new MotorcycleODM();
+      const motorcycleService = new MotorcycleService(motorcycleODM);
+      await motorcycleService.deleteOne(validId);
+  
+      // Assertion
+      expect(motorcycleService.deleteOne).not.to.Throw();
+    });
+
+    it('Não deve ser possível deletar uma moto com ID inválido', async function () {
+      // Arrange not necessary
+      // Action and Assertion
+      try {
+        const motorcycleODM = new MotorcycleODM();
+        const motorcycleService = new MotorcycleService(motorcycleODM);
+        await motorcycleService.deleteOne(invalidId);
+      } catch (error) {
+        expect((error as Error).message).to.be.equal(MessagesTypes.INVALID);
+      }
+    });
+
+    it('Não deve ser possível deletar uma moto com ID inexistente', async function () {
+      // Arrange
+      Sinon.stub(Model, 'deleteOne').resolves(deleteFailReturn);
+      
+      // Action and Assertion
+      try {
+        const motorcycleODM = new MotorcycleODM();
+        const motorcycleService = new MotorcycleService(motorcycleODM);
+        await motorcycleService.deleteOne(validId);
+      } catch (error) {
+        expect((error as Error).message).to.be.equal(MessagesTypes.MOTOR_NOT_FOUND);
       }
     });
   });

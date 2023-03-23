@@ -4,6 +4,7 @@ import Sinon from 'sinon';
 import ICar from '../../../src/Interfaces/ICar';
 import CarODM from '../../../src/Models/CarODM';
 import CarService from '../../../src/Services/CarService';
+import MessagesTypes from '../../../src/Services/MessagesTypes';
 
 describe('Testando a camada CarService', function () {
   afterEach(function () {
@@ -52,6 +53,8 @@ describe('Testando a camada CarService', function () {
     seatsQty: 5,
   };
 
+  const deleteReturn = { acknowledged: true, deletedCount: 1 };
+  const deleteFailReturn = { acknowledged: true, deletedCount: 0 };
   const validId = '641c7ffc4245648eb3328100';
   const invalidId = 'invalid';
 
@@ -167,6 +170,51 @@ describe('Testando a camada CarService', function () {
         await carService.updateOne('641c7ffc4245648eb3328100', updateInput);
       } catch (error) {
         expect((error as Error).message).to.be.equal('Car not found');
+      }
+    });
+  });
+
+  describe('Método DeleteOne', function () {
+    afterEach(function () {
+      Sinon.restore();
+    });
+    
+    it('Deve ser possível deletar um carro pelo ID', async function () {
+      // Arrange
+      Sinon.stub(Model, 'deleteOne').resolves(deleteReturn);
+      
+      // Action
+      const carODM = new CarODM();
+      const carService = new CarService(carODM);
+      await carService.deleteOne(validId);
+  
+      // Assertion
+      expect(carService.deleteOne).not.to.Throw();
+    });
+
+    it('Não deve ser possível deletar um carro com ID inválido', async function () {
+      // Arrange not necessary
+      // Action and Assertion
+      try {
+        const carODM = new CarODM();
+        const carService = new CarService(carODM);
+        await carService.deleteOne(invalidId);
+      } catch (error) {
+        expect((error as Error).message).to.be.equal(MessagesTypes.INVALID);
+      }
+    });
+
+    it('Não deve ser possível deletar um carro com ID inexistente', async function () {
+      // Arrange
+      Sinon.stub(Model, 'deleteOne').resolves(deleteFailReturn);
+      
+      // Action and Assertion
+      try {
+        const carODM = new CarODM();
+        const carService = new CarService(carODM);
+        await carService.deleteOne(validId);
+      } catch (error) {
+        expect((error as Error).message).to.be.equal(MessagesTypes.CAR_NOT_FOUND);
       }
     });
   });
