@@ -19,12 +19,12 @@ class CarService {
   }
   
   public async createCar(values: ICar) {
-    const newCar = await this.carODM.createCar(values);
+    const newCar = await this.carODM.create(values);
     return this.creteCarDomain(newCar);
   }
 
   public async findAllCars() {
-    const allCars = await this.carODM.findAllCars();
+    const allCars = await this.carODM.findAll();
     const allCarsFormated = allCars.map((car) => this.creteCarDomain(car));
     return allCarsFormated; 
   }

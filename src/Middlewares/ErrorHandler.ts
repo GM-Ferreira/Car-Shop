@@ -14,6 +14,9 @@ class ErrorHandler {
       case 'Invalid mongo id':
         res.status(422).json({ message: error.message });
         break;
+      case 'Motorcycle not found':
+        res.status(404).json({ message: error.message });
+        break;
       default:
         res.status(500).json({ message: error.message });
     }
