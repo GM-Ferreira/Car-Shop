@@ -2,6 +2,7 @@ import { isValidObjectId } from 'mongoose';
 import Motorcycle from '../Domains/Motorcycle';
 import IMotorcycle from '../Interfaces/IMotorcycle';
 import MotorcycleODM from '../Models/MotorcycleODM';
+import MessagesTypes from './MessagesTypes';
 
 class MotorcycleService {
   private motorcycleODM: MotorcycleODM;
@@ -30,20 +31,27 @@ class MotorcycleService {
   }
 
   public async findById(id: string) {
-    if (!this.isValidId(id)) throw new Error('Invalid mongo id');
+    if (!this.isValidId(id)) throw new Error(MessagesTypes.INVALID);
 
     const motorcycle = await this.motorcycleODM.findById(id);
-    if (!motorcycle) throw new Error('Motorcycle not found');
+    if (!motorcycle) throw new Error(MessagesTypes.MOTOR_NOT_FOUND);
 
     return this.creteMotorcycleDomain(motorcycle);
   }
 
   public async updateOne(id: string, newData: IMotorcycle) {
-    if (!this.isValidId(id)) throw new Error('Invalid mongo id');
+    if (!this.isValidId(id)) throw new Error(MessagesTypes.INVALID);
     
     const updatedMotorcycle = await this.motorcycleODM.updateOne(id, newData);
-    if (!updatedMotorcycle) throw new Error('Motorcycle not found');
+    if (!updatedMotorcycle) throw new Error(MessagesTypes.MOTOR_NOT_FOUND);
     return this.creteMotorcycleDomain(updatedMotorcycle);
+  }
+
+  public async deleteOne(id: string) {
+    if (!this.isValidId(id)) throw new Error(MessagesTypes.INVALID);
+
+    const { deletedCount } = await this.motorcycleODM.deleteOne(id);
+    if (deletedCount === 0) throw new Error(MessagesTypes.MOTOR_NOT_FOUND);
   }
 }
 

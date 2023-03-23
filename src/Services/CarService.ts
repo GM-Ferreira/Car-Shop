@@ -2,6 +2,7 @@ import { isValidObjectId } from 'mongoose';
 import Car from '../Domains/Car';
 import ICar from '../Interfaces/ICar';
 import CarODM from '../Models/CarODM';
+import MessagesTypes from './MessagesTypes';
 
 class CarService {
   private carODM: CarODM;
@@ -30,20 +31,27 @@ class CarService {
   }
 
   public async findById(id: string) {
-    if (!this.isValidId(id)) throw new Error('Invalid mongo id');
+    if (!this.isValidId(id)) throw new Error(MessagesTypes.INVALID);
 
     const car = await this.carODM.findById(id);
-    if (!car) throw new Error('Car not found');
+    if (!car) throw new Error(MessagesTypes.CAR_NOT_FOUND);
 
     return this.creteCarDomain(car);
   }
 
   public async updateOne(id: string, newData: ICar) {
-    if (!this.isValidId(id)) throw new Error('Invalid mongo id');
+    if (!this.isValidId(id)) throw new Error(MessagesTypes.INVALID);
     
     const updatedCar = await this.carODM.updateOne(id, newData);
-    if (!updatedCar) throw new Error('Car not found');
+    if (!updatedCar) throw new Error(MessagesTypes.CAR_NOT_FOUND);
     return this.creteCarDomain(updatedCar);
+  }
+
+  public async deleteOne(id: string) {
+    if (!this.isValidId(id)) throw new Error(MessagesTypes.INVALID);
+
+    const { deletedCount } = await this.carODM.deleteOne(id);
+    if (deletedCount === 0) throw new Error(MessagesTypes.CAR_NOT_FOUND);
   }
 }
 
