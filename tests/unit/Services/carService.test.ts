@@ -31,6 +31,27 @@ describe('Testando a camada CarService', function () {
     seatsQty: 5,
   };
 
+  const outputUpdatedCar: ICar = {
+    id: '641c7ffc4245648eb3328100',
+    model: 'C63 AMG',
+    year: 2018,
+    color: 'Black',
+    status: true,
+    buyValue: 549.900,
+    doorsQty: 4,
+    seatsQty: 5,
+  };
+
+  const updateInput: ICar = {
+    model: 'C63 AMG',
+    year: 2018,
+    color: 'Black',
+    status: true,
+    buyValue: 549.900,
+    doorsQty: 4,
+    seatsQty: 5,
+  };
+
   const validId = '641c7ffc4245648eb3328100';
   const invalidId = 'invalid';
 
@@ -65,6 +86,10 @@ describe('Testando a camada CarService', function () {
   });
 
   describe('Método FindById', function () {
+    afterEach(function () {
+      Sinon.restore();
+    });
+    
     it('Deve ser possível listar um carro pelo ID', async function () {
       // Arrange
       Sinon.stub(Model, 'findById').resolves(outputCar);
@@ -99,6 +124,47 @@ describe('Testando a camada CarService', function () {
         const carODM = new CarODM();
         const carService = new CarService(carODM);
         await carService.findById(validId);
+      } catch (error) {
+        expect((error as Error).message).to.be.equal('Car not found');
+      }
+    });
+  });
+
+  describe('Método UpdateOne', function () {
+    it('Deve ser possível atualizar um carro informando seu ID', async function () {
+      // Arrange
+      Sinon.stub(Model, 'findOneAndUpdate').resolves(outputUpdatedCar);
+      
+      // Action
+      const carODM = new CarODM();
+      const carService = new CarService(carODM);
+      const car = await carService.updateOne('641c7ffc4245648eb3328100', updateInput);
+  
+      // Assertion
+      expect(car).to.be.deep.equal(outputUpdatedCar);
+    });
+
+    it('Não deve ser possível atualizar um carro com ID inválido', async function () {
+      // Arrange not necessary
+      // Action and Assertion
+      try {
+        const carODM = new CarODM();
+        const carService = new CarService(carODM);
+        await carService.updateOne(invalidId, updateInput);
+      } catch (error) {
+        expect((error as Error).message).to.be.equal('Invalid mongo id');
+      }
+    });
+
+    it('Não deve ser possível atualizar um carro inexistente', async function () {
+      // Arrange
+      Sinon.stub(Model, 'findOneAndUpdate').resolves(null);
+      
+      // Action and Assertion
+      try {
+        const carODM = new CarODM();
+        const carService = new CarService(carODM);
+        await carService.updateOne('641c7ffc4245648eb3328100', updateInput);
       } catch (error) {
         expect((error as Error).message).to.be.equal('Car not found');
       }
