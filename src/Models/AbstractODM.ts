@@ -24,6 +24,10 @@ abstract class AbstractODM<T> {
   public async updateOne(id: string, newData: Partial<T>): Promise<T | null> {
     return this.model.findOneAndUpdate({ _id: id }, newData, { new: true });
   }
+
+  public async deleteOne(id: string): Promise<{ deletedCount: number }> {
+    return this.model.deleteOne({ _id: id });
+  }
 }
 
 export default AbstractODM;
