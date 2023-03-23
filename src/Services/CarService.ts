@@ -10,11 +10,8 @@ class CarService {
     this.carODM = carODM;
   }
 
-  private creteCarDomain(carValues: ICar | null): Car | null {
-    if (carValues) {
-      return new Car(carValues);
-    }
-    return null;
+  private creteCarDomain(carValues: ICar): Car {
+    return new Car(carValues);
   }
   
   public async createCar(values: ICar) {
