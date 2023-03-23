@@ -58,7 +58,9 @@ Nesse projeto, foram aplicados os princípios de POO para a construção de uma 
  <details>
   <summary><strong>:whale: Execução da aplicação </strong></summary><br />
   
-  - Para iniciar o projeto basta ter o docker instalado e rodar o comando ```docker-compose up -d``` na pasta raiz do repositório.
+  - Para iniciar o projeto basta ter o docker instalado
+  - Crie um aquivo ` .env ` e cole o código ` MONGO_DB_URL=mongodb://localhost:27017/CarShop `.
+  - Execute o comando ```docker-compose up -d``` na pasta raiz do repositório.
   - Para finalizar o projeto rode o comando `docker-compose down` na pasta raiz do repositório.
   - Para visualizar os logs do backend no terminal, rode o comando `docker-compose run logs app-car-shop` na pasta raiz do repositório.
   - A aplicação roda na porta ` 3001 `
